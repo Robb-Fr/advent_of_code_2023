@@ -49,41 +49,38 @@ fn part2() {
                         index_match.push((l.len() - found, pat));
                     }
                 }
-                let min_option =
-                    index_match
-                        .iter()
-                        .fold(None, |cur_min: Option<(usize, &str)>, &val| match cur_min {
-                            Some(cur_min_val) => {
-                                if val.0 < cur_min_val.0 {
-                                    Some(val)
-                                } else {
-                                    cur_min
-                                }
+                let extremums_option = index_match.iter().fold(
+                    (None, None),
+                    |cur_min_max: (Option<(usize, &str)>, Option<(usize, &str)>), &val| {
+                        let mut left = cur_min_max.0;
+                        if let Some(cur_min_val) = cur_min_max.0 {
+                            if val.0 < cur_min_val.0 {
+                                left = Some(val);
                             }
-                            None => Some(val),
-                        });
-                if let Some(min) = min_option {
-                    if let Some(&left_val) = patterns_map.get(min.1) {
-                        sum += left_val * 10;
-                    }
-                }
-                let max_option =
-                    index_match
-                        .iter()
-                        .fold(None, |cur_max: Option<(usize, &str)>, &val| match cur_max {
-                            Some(cur_max_val) => {
-                                if val.0 > cur_max_val.0 {
-                                    Some(val)
-                                } else {
-                                    cur_max
-                                }
+                        } else {
+                            left = Some(val);
+                        }
+                        let mut right = cur_min_max.1;
+                        if let Some(cur_max_val) = cur_min_max.1 {
+                            if val.0 > cur_max_val.0 {
+                                right = Some(val);
                             }
-                            None => Some(val),
-                        });
-                if let Some(max) = max_option {
-                    if let Some(&right_val) = patterns_map.get(max.1) {
-                        sum += right_val;
+                        } else {
+                            right = Some(val);
+                        }
+                        (left, right)
+                    },
+                );
+                match extremums_option {
+                    (Some(min), Some(max)) => {
+                        if let Some(&left_val) = patterns_map.get(min.1) {
+                            sum += 10 * left_val;
+                        }
+                        if let Some(&right_val) = patterns_map.get(max.1) {
+                            sum += right_val;
+                        }
                     }
+                    _ => panic!("did not find min and max"),
                 }
             }
         }
