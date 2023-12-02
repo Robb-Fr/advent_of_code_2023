@@ -7,11 +7,47 @@ fn main() {
 
     println!("Part 1:");
     part1();
+
+    println!("Part 2:");
+    part2();
 }
 
 const MAX_RED: u32 = 12;
 const MAX_GREEN: u32 = 13;
 const MAX_BLUE: u32 = 14;
+
+fn part2() {
+    if let Ok(lines) = read_lines("./input/day2") {
+        let mut sum: u32 = 0;
+        for line in lines {
+            if let Ok(l) = line {
+                let game_info = parse_line(&l);
+                let mut maxs = HashMap::from([
+                    (DiceColor::RED, 0),
+                    (DiceColor::GREEN, 0),
+                    (DiceColor::BLUE, 0),
+                ]);
+                for game in game_info.games {
+                    for col in [DiceColor::RED, DiceColor::GREEN, DiceColor::BLUE] {
+                        if let Some(&score) = game.get(&col) {
+                            if let Some(&max) = maxs.get(&col) {
+                                if score > max {
+                                    maxs.insert(col, score);
+                                }
+                            }
+                        }
+                    }
+                }
+                let mut prod = 1;
+                for (_, m) in maxs {
+                    prod *= m;
+                }
+                sum += prod;
+            }
+        }
+        println!("Sum was: {}", sum);
+    }
+}
 
 fn part1() {
     if let Ok(lines) = read_lines("./input/day2") {
