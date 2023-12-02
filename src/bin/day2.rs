@@ -29,19 +29,14 @@ fn part2() {
                 ]);
                 for game in game_info.games {
                     for col in [DiceColor::RED, DiceColor::GREEN, DiceColor::BLUE] {
-                        if let Some(&score) = game.get(&col) {
-                            if let Some(&max) = maxs.get(&col) {
-                                if score > max {
-                                    maxs.insert(col, score);
-                                }
+                        if let (Some(&score), Some(&max)) = (game.get(&col), maxs.get(&col)) {
+                            if score > max {
+                                maxs.insert(col, score);
                             }
                         }
                     }
                 }
-                let mut prod = 1;
-                for (_, m) in maxs {
-                    prod *= m;
-                }
+                let prod = maxs.iter().fold(1, |cur_prod, (_, &max)| cur_prod * max);
                 sum += prod;
             }
         }
